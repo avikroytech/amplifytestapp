@@ -11,15 +11,6 @@ import { useEffect } from 'react';
 import awsExports from './aws-exports';
 Amplify.configure(awsExports);
 
-function App({ signOut, user }) {
-  return (
-    <>
-      <h1>Hello {user.username}</h1>
-      <button onClick={signOut}>Sign out</button>
-    </>
-  );
-  }
-
 function App({signOut, user}) {
 
   useEffect(() => {
@@ -36,7 +27,11 @@ function App({signOut, user}) {
         <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
           Learn React Avik's Way
         </a>
-        <AmplifySignOut />
+
+        <>
+          <h1>Hello {user.username}</h1>
+          <button onClick={signOut}>Sign out</button>
+        </>
       </header>
     </div>
   );
