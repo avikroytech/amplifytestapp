@@ -1,1 +1,20 @@
-export type AmplifyDependentResourcesAttributes = {}
+export type AmplifyDependentResourcesAttributes = {
+    "auth": {
+        "amplifytestapp": {
+            "IdentityPoolId": "string",
+            "IdentityPoolName": "string",
+            "UserPoolId": "string",
+            "UserPoolArn": "string",
+            "UserPoolName": "string",
+            "AppClientIDWeb": "string",
+            "AppClientID": "string"
+        }
+    },
+    "analytics": {
+        "amplifytestappanalytics": {
+            "Region": "string",
+            "Id": "string",
+            "appName": "string"
+        }
+    }
+}

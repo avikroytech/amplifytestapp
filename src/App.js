@@ -1,7 +1,31 @@
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
+import {Analytics, Amplify} from 'aws-amplify';
+
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css';
+
+import { useEffect } from 'react';
+
+import awsExports from './aws-exports';
+Amplify.configure(awsExports);
+
+function App({ signOut, user }) {
+  return (
+    <>
+      <h1>Hello {user.username}</h1>
+      <button onClick={signOut}>Sign out</button>
+    </>
+  );
+  }
+
+function App({signOut, user}) {
+
+  useEffect(() => {
+    Analytics.record("home page visit")
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
@@ -9,17 +33,13 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+        <a className="App-link" href="https://reactjs.org" target="_blank" rel="noopener noreferrer">
+          Learn React Avik's Way
         </a>
+        <AmplifySignOut />
       </header>
     </div>
   );
 }
 
-export default App;
+export default withAuthenticator(App);
