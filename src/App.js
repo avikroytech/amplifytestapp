@@ -69,9 +69,10 @@ function App({signOut, user}) {
     e.preventDefault();
 
     const orderInformation = {
+      id :'1111111',
       customerid: customerId,
       delverytime: deliveryTime,
-      items: []
+      items: ['Test Items']
     }
 
     console.log(orderInformation);
@@ -148,10 +149,12 @@ function App({signOut, user}) {
         <br/>
         <form id="addOrder" onSubmit={handleOrderFormSubmit} >
           <p>Customers</p>
-          <select onChange={e => setCustomerId(e.target.value) } >
+          <select onChange={e => { 
+            console.log('value - ' + e.target.value);
+            setCustomerId(e.target.value);} } >
           {listCustomer && listCustomer.map(item =>
           
-              <option key={item.id}>
+              <option key={item.id} id={item.id} value={item.id}>
                 {item.firstname}
               </option>
           )}
@@ -160,13 +163,14 @@ function App({signOut, user}) {
           <label for="delivery_time">
             Delivery Time: 
             <input type="datetime-local" name="delivery_time" id="delivery_time"
-            onChange={e => setDeliveryTime(e.target.value) }/>
+            onChange={e => setDeliveryTime('2022-05-23T20:13:00.000Z') }/>
+            
           </label>
           <br/>
           <label for="order_items">
             Items for Order:
             <br/>
-            <textarea rows={5} cols={30} maxLength={3} type="text" name="order_items" id="order_items"
+            <textarea rows={5} cols={30} maxLength={15} type="text" name="order_items" id="order_items"
             onChange={e => setOrderItems(e.target.value) }/>
           </label>
           <br/>
