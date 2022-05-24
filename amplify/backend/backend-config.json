@@ -39,36 +39,19 @@
     }
   },
   "api": {
-    "amplifytestapi": {
+    "amplifytestapp": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
-      "dependsOn": [
-        {
-          "category": "auth",
-          "resourceName": "amplifytestapp",
-          "attributes": [
-            "UserPoolId"
-          ]
-        }
-      ],
+      "dependsOn": [],
       "output": {
         "authConfig": {
           "defaultAuthentication": {
-            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": {
-              "userPoolId": "authamplifytestapp"
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
             }
           },
-          "additionalAuthenticationProviders": [
-            {
-              "authenticationType": "API_KEY",
-              "apiKeyConfig": {
-                "description": "apikeyapmplify",
-                "apiKeyExpirationDays": 365,
-                "apiKeyExpirationDate": "2023-05-23T02:13:18.504Z"
-              }
-            }
-          ]
+          "additionalAuthenticationProviders": []
         }
       }
     }

@@ -6,8 +6,7 @@ import {Analytics, Amplify, API} from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import * as mutations from './graphql/mutations';
-import PhoneInput from 'react-phone-number-input';
-
+import * as queries from './graphql/queries';
 import { useEffect, useState } from 'react';
 
 import awsExports from './aws-exports';
@@ -23,11 +22,25 @@ function App({signOut, user}) {
   const [phoneNotificationPreffered, setPhoneNotificationPreffered] = useState("");
   const [emailNotificationPreffered, setEmailNotificationPreffered] = useState("");
 
+  const [deliveryTime, setDeliveryTime] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [orderItems, setOrderItems] = useState("")
+
+  const [listCustomer, setListCustomer] = useState([]);
+
   useEffect(() => {
-    Analytics.record("home page visit")
+
+    async function getAllCustomers(){
+      const allCustomers = await API.graphql( {query: queries.listCustomers} );
+      //console.log(allCustomers.data.listCustomers);
+      setListCustomer(allCustomers.data.listCustomers.items);
+    }
+
+    //Analytics.record("home page visit");
+    getAllCustomers();
   }, [])
 
-  const handleFormSubmit = async (e) => {
+  const handleCustomerFormSubmit = async (e, formType) => {
     e.preventDefault();
 
     const customerInformation = {
@@ -36,11 +49,41 @@ function App({signOut, user}) {
       email: email,
       defaultaddress: address,
       phone: phoneNumber,
-      isphonenotificationpreffered: phoneNotificationPreffered,
-      isemailnotificationpreferred: emailNotificationPreffered
+      isphonenotificationpreffered: true,
+      isemailnotificationpreferred: false
     }
 
-    const newCustomer = await API.graphql({query: mutations.createCustomer, variables: {input: customerInformation}});
+    // console.log(customerInformation);
+    try{
+      const newCustomer = await API.graphql({
+        query: mutations.createCustomer, 
+        variables: {input: customerInformation}});
+    }
+    catch(err){
+      console.log(err);
+    }
+    // console.log(newCustomer);
+  }
+
+  const handleOrderFormSubmit = async (e, formType) => {
+    e.preventDefault();
+
+    const orderInformation = {
+      customerid: customerId,
+      delverytime: deliveryTime,
+      items: []
+    }
+
+    console.log(orderInformation);
+    try{
+      const newOrder = await API.graphql({
+        query: mutations.createOrder, 
+        variables: {input: orderInformation}});
+    }
+    catch(err){
+      console.log(err);
+    }
+    // console.log(newOrder);
   }
 
   return (
@@ -51,8 +94,17 @@ function App({signOut, user}) {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <form onSubmit={handleFormSubmit} >
-          <PhoneInput country="Canada" />
+        <h3>Customers</h3>
+        <select>
+        {listCustomer && listCustomer.map(item =>
+         
+            <option key={item.id}>
+              {item.firstname}
+            </option>
+         )}
+        </select>
+        
+        <form id="addCustomer" onSubmit={handleCustomerFormSubmit} >
           <label for="first_name">
             First Name: 
             <input type="text" name="first_name" id="first_name"
@@ -74,7 +126,7 @@ function App({signOut, user}) {
           onChange={e => setEmail(e.target.value) }/>
           </label>
            <br/>
-            <label for="isphonenotificationpreffered">Prefer Phone Notification:
+            {/* <label for="isphonenotificationpreffered">Prefer Phone Notification:
            <input type="text" name="isphonenotificationpreffered" 
            id="isphonenotificationpreffered"
            onChange={e => setPhoneNotificationPreffered(e.target.value) }/>
@@ -84,7 +136,7 @@ function App({signOut, user}) {
            id="isemailnotificationpreferred"
            onChange={e => setEmailNotificationPreffered(e.target.value) }/>
            </label>
-            <br/>
+            <br/> */}
             <label for="address">Address:
            <input type="text" name="address" id="address"
            onChange={e => setAddress(e.target.value) }/>
@@ -93,6 +145,34 @@ function App({signOut, user}) {
             <br/>
           <button type='submit'>Add Customer</button>
         </form>
+        <br/>
+        <form id="addOrder" onSubmit={handleOrderFormSubmit} >
+          <p>Customers</p>
+          <select onChange={e => setCustomerId(e.target.value) } >
+          {listCustomer && listCustomer.map(item =>
+          
+              <option key={item.id}>
+                {item.firstname}
+              </option>
+          )}
+          </select>
+          <br/>
+          <label for="delivery_time">
+            Delivery Time: 
+            <input type="datetime-local" name="delivery_time" id="delivery_time"
+            onChange={e => setDeliveryTime(e.target.value) }/>
+          </label>
+          <br/>
+          <label for="order_items">
+            Items for Order:
+            <br/>
+            <textarea rows={5} cols={30} maxLength={3} type="text" name="order_items" id="order_items"
+            onChange={e => setOrderItems(e.target.value) }/>
+          </label>
+          <br/>
+          <button type='submit'>Add Order</button>
+        </form>
+        
         <>
           <h1>Hello {user.username}</h1>
           <button onClick={signOut}>Sign out</button>
